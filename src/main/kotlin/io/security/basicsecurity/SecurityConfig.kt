@@ -52,6 +52,9 @@ class SecurityConfig(
                     .tokenValiditySeconds(3600)
                     .userDetailsService(userDetailsService)
             }
+            .sessionManagement {
+                it.maximumSessions(1)
+            }
             .build()
     }
 }
