@@ -4,11 +4,14 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig {
+class SecurityConfig(
+    private val userDetailsService: UserDetailsService
+) {
 
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -43,6 +46,11 @@ class SecurityConfig {
                     }.logoutSuccessHandler { request, response, authentication ->
                         response.sendRedirect("/login")
                     }
+            }
+            .rememberMe {
+                it.rememberMeParameter("remember-me")
+                    .tokenValiditySeconds(3600)
+                    .userDetailsService(userDetailsService)
             }
             .build()
     }
