@@ -17,8 +17,7 @@ class SecurityConfig {
                 it.anyRequest().authenticated()
             }
             .formLogin {
-                it
-                    .defaultSuccessUrl("/")
+                it.defaultSuccessUrl("/")
                     .failureUrl("/login")
                     .usernameParameter("userId")
                     .passwordParameter("passwd")
@@ -32,6 +31,18 @@ class SecurityConfig {
                         response.sendRedirect("/login")
                     }
                     .permitAll()
+            }
+            .logout {
+                it.logoutUrl("/logout")
+                    .logoutSuccessUrl("/login")
+                    .deleteCookies("JSESSIONID", "remember-me")
+                    .addLogoutHandler { request, response, authentication ->
+                        val session = request.session
+                        println("session: $session")
+                        session.invalidate()
+                    }.logoutSuccessHandler { request, response, authentication ->
+                        response.sendRedirect("/login")
+                    }
             }
             .build()
     }
