@@ -10,4 +10,19 @@ class SecurityController {
     fun index(): String {
         return "home"
     }
+
+    @GetMapping("/user")
+    fun user(): String {
+        return "user"
+    }
+
+    @GetMapping("/admin/sys")
+    fun sys(): String {
+        return "sys"
+    }
+
+    @GetMapping("/admin/test")
+    fun admin(): String {
+        return "admin"
+    }
 }
