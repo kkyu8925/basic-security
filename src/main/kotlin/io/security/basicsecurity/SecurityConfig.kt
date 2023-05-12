@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache
 
 @Configuration
 @EnableWebSecurity
@@ -47,11 +48,25 @@ class SecurityConfig {
                     .anyRequest().authenticated()
             }
             .formLogin {
+                it.successHandler { request, response, authentication ->
+                    val httpSessionRequestCache = HttpSessionRequestCache()
+                    val savedRequest = httpSessionRequestCache.getRequest(request, response)
+                    response.sendRedirect(savedRequest.redirectUrl)
+                }
             }
             .sessionManagement {
                 it.maximumSessions(1)
 //                    .maxSessionsPreventsLogin(true)
                     .maxSessionsPreventsLogin(false)
+            }
+            .exceptionHandling {
+                it
+                    .authenticationEntryPoint { request, response, authException ->
+                        response.sendRedirect("/login")
+                    }
+                    .accessDeniedHandler { request, response, accessDeniedException ->
+                        response.sendRedirect("/denied")
+                    }
             }
             .build()
     }
